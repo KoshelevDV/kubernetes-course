@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web-server
+  name: web-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+    spec:
+      containers:
+      - image: quay.io/myafk/interactive:stable
+        command: ["interactive", "ingress"]
+        name: web-server
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: es-config
+              key: ELASTICSEARCH_HOSTS
+        - name: REDIS_MASTER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: es-config
+              key: REDIS_MASTER_HOST
+        - name: REDIS_SLAVE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: es-config
+              key: REDIS_SLAVE_HOST
+        ports:
+        - containerPort: 8085
